@@ -9,14 +9,24 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Copy files to EC2
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        source: "."
-        target: "/var/www/html/"
+      - name: Remove existing files in /var/www/html/ if it exists
+        run: |
+          if [ -d "/var/www/html" ]; then
+            sudo rm -rf /var/www/html/*
+          fi
+
+      - name: Create Tar Archive
+        run: |
+          git archive -o cicdhtml.tar.gz HEAD  # Create tar archive of the current HEAD
+
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "cicdhtml.tar.gz"  # Source points to the correct tar file
+          target: "/var/www/html/"
