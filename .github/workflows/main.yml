@@ -15,20 +15,20 @@ jobs:
       - name: Install Git
         run: sudo apt-get install git -y  # Ensure Git is installed
 
-      - name: Remove existing cicdhtml directory if it exists
-        run: |
-          if [ -d "/tmp/cicdhtml" ]; then
-            rm -rf /tmp/cicdhtml
-          fi
-
       - name: Remove existing files in /var/www/html/ if it exists
         run: |
           if [ -d "/var/www/html" ]; then
-           sudo rm -rf /var/www/html/*
+            sudo rm -rf /var/www/html/*
           fi
 
-      - name: Clone Repository
-        run: git clone https://github.com/madhanumk/cicdhtml.git /tmp/cicdhtml
+      - name: Create Tar Archive
+        run: |
+          if [ "$(ls -A .)" ]; then  # Check if there are files in the current directory
+            tar czf cicdhtml.tar.gz .  # Create tar archive of the current directory
+          else
+            echo "No files to archive."
+            exit 1
+          fi
 
       - name: Copy files to EC2
         uses: appleboy/scp-action@master
@@ -36,6 +36,5 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "/tmp/cicdhtml/*"  # Adjust source to point to the cloned directory
+          source: "cicdhtml.tar.gz"  # Source points to the correct tar file
           target: "/var/www/html/"
-          strip_components: 1        # Optional: strip leading directory from file paths
