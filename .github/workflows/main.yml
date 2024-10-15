@@ -9,14 +9,22 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Copy files to EC2
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        source: "."
-        target: "/var/www/html/"
+      - name: Install Git
+        run: sudo apt-get install git -y  # Ensure Git is installed
+
+      - name: Clone Repository
+        run: git clone https://github.com/madhanumk/cicdhtm.git /tmp/cicdhtm
+
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "/tmp/cicdhtm/*"  # Adjust source to point to the cloned directory
+          target: "/var/www/html/"
+          strip_components: 1        # Optional: strip leading directory from file paths
+          rm: true                   # Optional: remove files in the target directory before copying
