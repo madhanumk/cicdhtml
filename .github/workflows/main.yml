@@ -12,9 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install Git
-        run: sudo apt-get install git -y  # Ensure Git is installed
-
       - name: Remove existing files in /var/www/html/ if it exists
         run: |
           if [ -d "/var/www/html" ]; then
@@ -23,12 +20,7 @@ jobs:
 
       - name: Create Tar Archive
         run: |
-          if [ "$(ls -A .)" ]; then  # Check if there are files in the current directory
-            tar czf cicdhtml.tar.gz .  # Create tar archive of the current directory
-          else
-            echo "No files to archive."
-            exit 1
-          fi
+          git archive -o cicdhtml.tar.gz HEAD  # Create tar archive of the current HEAD
 
       - name: Copy files to EC2
         uses: appleboy/scp-action@master
