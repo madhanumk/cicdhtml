@@ -24,7 +24,7 @@ jobs:
       - name: Remove existing files in /var/www/html/ if it exists
         run: |
           if [ -d "/var/www/html" ]; then
-            rm -rf /var/www/html/*
+           sudo rm -rf /var/www/html/*
           fi
 
       - name: Clone Repository
