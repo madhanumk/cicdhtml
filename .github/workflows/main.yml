@@ -16,7 +16,7 @@ jobs:
         run: sudo apt-get install git -y  # Ensure Git is installed
 
       - name: Clone Repository
-        run: git clone https://github.com/madhanumk/cicdhtm.git /tmp/cicdhtm
+        run: git clone https://github.com/madhanumk/cicdhtml.git /tmp/cicdhtml
 
       - name: Copy files to EC2
         uses: appleboy/scp-action@master
