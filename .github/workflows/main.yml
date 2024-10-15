@@ -18,15 +18,7 @@ jobs:
             sudo rm -rf /var/www/html/*
           fi
 
-      - name: Create Tar Archive
+      - name: Clone Repository to EC2
         run: |
-          git archive -o cicdhtml.tar.gz HEAD  # Create tar archive of the current HEAD
+          ssh -o StrictHostKeyChecking=no -i "${{ secrets.EC2_SSH_KEY }}" ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "git clone https://github.com/madhanumk/cicdhtml.git /var/www/html"
 
-      - name: Copy files to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: "cicdhtml.tar.gz"  # Source points to the correct tar file
-          target: "/var/www/html/"
