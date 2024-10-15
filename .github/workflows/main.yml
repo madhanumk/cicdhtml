@@ -19,6 +19,7 @@ jobs:
           fi
 
       - name: Clone Repository to EC2
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i "${{ secrets.EC2_SSH_KEY }}" ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "git clone https://github.com/madhanumk/cicdhtml.git /var/www/html"
-
+          echo "$SSH_PRIVATE_KEY" | ssh -o StrictHostKeyChecking=no -i /dev/stdin ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "git clone https://github.com/madhanumk/cicdhtml.git /var/www/html"
