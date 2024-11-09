@@ -11,28 +11,39 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2  # Check out the repository
+        uses: actions/checkout@v2  # Checkout the repository code
 
       - name: Set up SSH key
         run: |
+          # Create the .ssh directory
           mkdir -p ~/.ssh
+
+          # Set the private key in the id_rsa file using the GitHub Secret
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa  # Set the correct permissions for the SSH private key
+          
+          # Set the correct permissions for the SSH private key
+          chmod 600 ~/.ssh/id_rsa
 
           # Add the EC2 host to known_hosts to avoid SSH authenticity warning
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
         shell: /usr/bin/bash -e {0}
 
+      - name: Verify SSH connection to EC2
+        run: |
+          # Check SSH connection to the EC2 instance by running a simple command (e.g., 'uptime')
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "uptime"
+
       - name: Run auto_deploy.sh script on EC2
         run: |
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            # Check if the auto_deploy.sh script exists
+          # SSH into the EC2 instance and run the auto_deploy.sh script
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            # Check if the auto_deploy.sh script exists in the specified directory
             if [ ! -f /var/www/html/auto_deploy.sh ]; then
               echo "Error: auto_deploy.sh not found in /var/www/html"
               exit 1
             fi
 
-            # Make sure the script is executable
+            # Make the auto_deploy.sh script executable
             sudo chmod +x /var/www/html/auto_deploy.sh
 
             # Run the script
@@ -41,5 +52,5 @@ jobs:
 
       - name: Cleanup
         run: |
-          # Remove private SSH key for security reasons
+          # Remove the SSH private key for security reasons
           rm -rf ~/.ssh/id_rsa
