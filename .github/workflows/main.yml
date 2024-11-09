@@ -30,6 +30,6 @@ jobs:
       # Step 4: Execute the script on the remote server
       - name: Run script on Ubuntu server
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@54.158.243.223 'bash -s' < ./var/www/html/auto_deploy.sh
+          ssh -o StrictHostKeyChecking=no ubuntu@54.158.243.223 'bash -s' < /var/www/html/auto_deploy.sh
 
             
