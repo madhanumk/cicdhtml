@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main
+      - main  # Trigger the workflow on push to the 'main' branch
 
 jobs:
   deploy:
@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2  # Check out the repository
 
       - name: Set up SSH key
         run: |
@@ -20,15 +20,17 @@ jobs:
           chmod 600 ~/.ssh/id_rsa  # Set the correct permissions for the SSH private key
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts  # Add EC2 host to known_hosts
 
-      - name: Remove existing directory /var/www/html if it exists
-        run: |
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "sudo rm -rf /var/www/html"
-
-      - name: Clone Repository to EC2
+      - name: Run auto_deploy.sh script on EC2
         run: |
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-          sudo mkdir -p /var/www/html  # Ensure the directory exists
-          sudo git clone https://github.com/madhanumk/cicdhtml.git /var/www/html  # Clone the repository
+          # Ensure the auto_deploy.sh script is executable and located in the correct directory
+          if [ ! -f /var/www/html/auto_deploy.sh ]; then
+            echo "Error: auto_deploy.sh not found in /var/www/html"
+            exit 1
+          fi
+          
+          # Run the auto_deploy.sh script (you can adjust the path if necessary)
+          sudo bash /var/www/html/auto_deploy.sh
           EOF
 
       - name: Cleanup
