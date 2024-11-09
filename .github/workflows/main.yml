@@ -30,4 +30,4 @@ jobs:
       # Step 4: Run the script on the remote server (no need to copy it, since it's already there)
       - name: Run deploy script on remote server
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@54.158.243.223 'sudo bash /var/www/html/auto_deploy.sh'
+          ssh -o StrictHostKeyChecking=no ubuntu@54.158.243.223 'sudo bash /var/www/auto_deploy.sh'
