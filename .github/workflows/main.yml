@@ -15,13 +15,13 @@ jobs:
 
       - name: Set up SSH key
         run: |
-          # Set up SSH private key
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa  # Set the correct permissions for the SSH private key
 
           # Add the EC2 host to known_hosts to avoid SSH authenticity warning
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+        shell: /usr/bin/bash -e {0}
 
       - name: Run auto_deploy.sh script on EC2
         run: |
