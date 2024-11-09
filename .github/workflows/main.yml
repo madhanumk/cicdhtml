@@ -15,17 +15,29 @@ jobs:
 
       - name: Set up SSH key
         run: |
+          # Enable debugging
+          set -x
+
           # Create the .ssh directory
           mkdir -p ~/.ssh
+          
+          # Check if the secret is set
+          echo "EC2_SSH_KEY is set to: ${{ secrets.EC2_SSH_KEY }}"  # This should not print the private key but confirm the secret is available
 
-          # Set the private key in the id_rsa file using the GitHub Secret (EC2_SSH_KEY)
+          # Write the SSH private key to the id_rsa file
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+
+          # Verify that the private key was written
+          ls -l ~/.ssh
 
           # Set the correct permissions for the SSH private key
           chmod 600 ~/.ssh/id_rsa
 
           # Add the EC2 host to known_hosts to avoid SSH authenticity warning
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+          # List known hosts to verify
+          cat ~/.ssh/known_hosts
         shell: /usr/bin/bash -e {0}
 
       - name: Verify SSH connection to EC2
