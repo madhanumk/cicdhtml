@@ -7,29 +7,27 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # This job runs on an Ubuntu environment
+    runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository code
+      # Step 1: Checkout code from the repository
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Set up SSH agent and add the private key
+      # Step 2: Set up SSH and add the SSH private key
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # Step 3: Add the server's known host key (optional)
+      # Step 3: Add the server's host key to known hosts (optional but recommended for security)
       - name: Add SSH host key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      # Step 4: Execute the script on the remote server
-      - name: Run script on Ubuntu server
+      # Step 4: Run the script on the remote server (no need to copy it, since it's already there)
+      - name: Run deploy script on remote server
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@54.158.243.223 'bash -s' < /var/www/html/auto_deploy.sh
-
-            
+          ssh -o StrictHostKeyChecking=no ubuntu@54.158.243.223 'bash /var/www/html/auto_deploy.sh'
