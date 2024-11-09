@@ -18,9 +18,9 @@ jobs:
           # Create the .ssh directory
           mkdir -p ~/.ssh
 
-          # Set the private key in the id_rsa file using the GitHub Secret
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          
+          # Set the private key in the id_rsa file using the GitHub Secret (EC2_SSH_KEY)
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+
           # Set the correct permissions for the SSH private key
           chmod 600 ~/.ssh/id_rsa
 
